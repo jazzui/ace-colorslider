@@ -16,11 +16,11 @@ function hslColor(parts) {
   return {r:255, g:255, b:0}
 }
 
-function findHexAt(line, pos.column) {
-  var hash = line.slice(0, pos.column).lastIndexOf('#')
-  if (hash === -1 || hash < pos.column - 7) return
+function findHexAt(line, column) {
+  var hash = line.slice(0, column).lastIndexOf('#')
+  if (hash === -1 || hash < column - 7) return
   var sub = line.slice(hash)
-  if (line.slice(hash, pos.column).indexOf(' ') !== -1) return
+  if (line.slice(hash, column).indexOf(' ') !== -1) return
   var match = sub.match(/^#[a-fA-F0-9]{3,6}/)
   if (!match) return
   return {
@@ -32,28 +32,28 @@ function findHexAt(line, pos.column) {
   }
 }
 
-function findExpandedAt(line, pos.column) {
-  var lp = line.slice(0, pos.column).lastIndexOf('(')
+function findExpandedAt(line, column) {
+  var lp = line.slice(0, column).lastIndexOf('(')
   if (lp === -1) return
-  var rp = line.slice(pos.column).indexOf(')')
+  var rp = line.slice(column).indexOf(')')
   if (rp === -1) return
   // TODO: change first to 4 to enable rgba
   var ln = line[lp-1] === 'a' ? 3 : 3
   var bef = line.slice(lp-ln,lp).toLowerCase()
   if (['rbg', 'rgba', 'hsl', 'hsla'].indexOf(bef) === -1) return
-  var inner = line.slice(lp + 1, pos.column + rp)
+  var inner = line.slice(lp + 1, column + rp)
     , parts = inner.replace(/ /g, '').match(/^(\d+),(\d+)%?,(\d+)%?(,\d*\.?\d+)?/)
   if (!parts) return
   return {
     start: lp - bef.length,
-    end: pos.column + rp + 1,
+    end: column + rp + 1,
     text: bef + '(' + inner + ')',
     color: bef[0] === 'r' ? rgbColor(parts) : hslColor(parts)
   }
 }
 
 function getColorAt(editor, pos) {
-  var line = e.getSession().doc.getLine(pos.row)
+  var line = editor.getSession().doc.getLine(pos.row)
     , range
   range = findHexAt(line, pos.column)
   if (range) return range
@@ -64,14 +64,15 @@ function getColorAt(editor, pos) {
 module.exports = function (editor, el) {
   var slider = new Slider()
     , range = null
+    , mode = 'hex'
     , changing = false
 
   function change(color) {
-    console.log('gotchange', number, range)
+    console.log('gotchange', color, range)
     if (!range) return
     var r = editor.getSelectionRange()
       , s = editor.getSelection()
-      , txt = number + ''
+      , txt = color + ''
     changing = true
     r.setStart(range.row, range.start)
     r.setEnd(range.row, range.end)
@@ -80,7 +81,7 @@ module.exports = function (editor, el) {
       s.setRange(r)
       editor.insert(txt)
     } catch (e) {
-      console.log('failed!', e, range, txt, number)
+      console.log('failed!', e, range, txt, color)
     }
     changing = false
     range.end = range.start + txt.length
@@ -91,7 +92,7 @@ module.exports = function (editor, el) {
     if (changing) return
     var r = editor.getSelectionRange()
       , pos = r.start
-      , num
+      , color
     if (!r.isEmpty()) {
       range = null
       try {
