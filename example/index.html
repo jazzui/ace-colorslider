@@ -1,0 +1,33 @@
+<!doctype html5>
+<html>
+    <head>
+        <title>Hi</title>
+        <style>
+            body {
+                padding: 200px;
+            }
+            #editor {
+            width: 500px;
+            height: 500px;
+            }
+        </style>
+        <link rel="stylesheet" href="../build/build.css">
+        <script src="ace/ace.js"></script>
+        <script src="../build/build.js"></script>
+    </head>
+    <body>
+	    <div id="editor">Colors #abc
+		    #b0cc5e
+        and letters 20% and things #aAb34F
+	hsl(100, 10%, 50%)
+        20+30 = rgb(200, 234, 456)</div>
+        <script>
+            var S = require('ace-slider')
+            var e = ace.edit(document.getElementById('editor'))
+            e.setTheme('ace/theme/twilight')
+            e.getSession().setMode('ace/mode/less')
+            S(e)
+        </script>
+    </body>
+</html>
+

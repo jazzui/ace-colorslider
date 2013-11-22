@@ -1,0 +1,20 @@
+{
+  "name": "ace-colorslider",
+  "repo": "jazzui/ace-colorslider",
+  "description": "Colorslider popover for an ace editor",
+  "version": "0.0.1",
+  "keywords": [],
+  "dependencies": {
+    "component/query": "*",
+    "jkroso/position": "*",
+    "jazzui/colorslider": "*",
+    "timoxley/color-convert": "*"
+  },
+  "development": {},
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": [
+    "index.js"
+  ],
+  "remotes": []
+}
