@@ -17,4 +17,7 @@ lint:
 clean:
 	rm -fr build components template.js
 
-.PHONY: clean
+test:
+	@mocha -R spec test
+
+.PHONY: clean test lint
