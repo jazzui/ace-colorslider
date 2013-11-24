@@ -1,12 +1,6 @@
 
-build: components index.js index.css template.js
+build: components index.js
 	@component build --dev
-
-index.css: index.styl
-	@stylus < index.styl > index.css
-
-template.js: template.html
-	@component convert $<
 
 components: component.json
 	@component install --dev

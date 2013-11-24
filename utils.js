@@ -6,30 +6,7 @@ module.exports = {
   rgbColor: rgbColor,
   hslColor: hslColor,
   findHexAt: findHexAt,
-  findExpandedAt: findExpandedAt,
-  colorString: colorString
-}
-
-function colorString(color, mode) {
-  return {hex: hexString, rgb: rgbString, hsl: hslString}[mode](color)
-}
-
-function hexDigit(number) {
-  var c = '0123456789abcdef'
-  return c[parseInt(number/16)] + c[number % 16]
-}
-
-function hexString(color) {
-  return '#' + hexDigit(color.r) + hexDigit(color.g) + hexDigit(color.b)
-}
-
-function rgbString(color) {
-  return 'rgb(' + color.r + ', ' + color.g + ', ' + color.b + ')'
-}
-
-function hslString(color) {
-  var res = rgbToHsl(color)
-  return 'hsl(' + res.h + ', ' + res.s + '%, ' + res.l + '%)'
+  findExpandedAt: findExpandedAt
 }
 
 function rgbToHsl(color) {
@@ -57,7 +34,8 @@ function hexColor(text) {
   return {
     r:parseInt(text.slice(0, 2), 16),
     g:parseInt(text.slice(2, 4), 16),
-    b:parseInt(text.slice(4, 6), 16)
+    b:parseInt(text.slice(4, 6), 16),
+    a:text.length === 8 ? parseInt(text.slice(6, 8), 16)/255 : 1
   }
 }
 
@@ -102,7 +80,7 @@ function findHexAt(line, column) {
   if (hash === -1 || hash < column - 7) return
   var sub = line.slice(hash)
   if (line.slice(hash, column).indexOf(' ') !== -1) return
-  var match = sub.match(/^#[a-fA-F0-9]{3,6}/)
+  var match = sub.match(/^#[a-fA-F0-9]{3,8}/)
   if (!match) return
   match = match[0]
   return {

@@ -22,20 +22,18 @@ module.exports = function (editor, el) {
     , changing = false
 
   function change(color) {
-    console.log('gotchange', color, range)
     if (!range) return
     var r = editor.getSelectionRange()
       , s = editor.getSelection()
-      , txt = utils.colorString(color, mode)
+      , alpha = color.a !== 1 ? 'a' : ''
+      , txt = mode === 'hex' ? color['rgb' + alpha]().toHex() : color[mode + alpha]().toString()
     changing = true
     r.setStart(range.row, range.start)
     r.setEnd(range.row, range.end)
     try {
-      console.log('set', r, txt, range)
       s.setRange(r)
       editor.insert(txt)
     } catch (e) {
-      console.log('failed!', e, range, txt, color)
     }
     changing = false
     range.end = range.start + txt.length
@@ -71,11 +69,9 @@ module.exports = function (editor, el) {
       return
     }
     mode = color.type
-    console.log('got number', color)
     var cursor = query('.ace_cursor', el)
     range = {row: pos.row, start: color.start, end: color.end}
     slider.set(color.color, true)
     slider.show(cursor)
-    console.log('change', this, e)
   })
 }
