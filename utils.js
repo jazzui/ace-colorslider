@@ -43,9 +43,9 @@ function rgbToHsl(color) {
     res[2] *= 100
   }
   return {
-    h: res[0],
-    s: res[1],
-    l: res[2]
+    h: parseInt(res[0]),
+    s: parseInt(res[1]),
+    l: parseInt(res[2])
   }
 }
 
