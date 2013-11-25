@@ -26,7 +26,12 @@ module.exports = function (editor, el) {
     var r = editor.getSelectionRange()
       , s = editor.getSelection()
       , alpha = color.a !== 1 ? 'a' : ''
-      , txt = mode === 'hex' ? color['rgb' + alpha]().toHex() : color[mode + alpha]().toString()
+      , txt
+    if (mode === 'hex') {
+      txt = color['rgba']()[alpha ? 'toString' : 'toHex']()
+    } else {
+      txt = color[mode + alpha]().toString()
+    }
     changing = true
     r.setStart(range.row, range.start)
     r.setEnd(range.row, range.end)
@@ -68,10 +73,10 @@ module.exports = function (editor, el) {
       } catch (e) {}
       return
     }
-    mode = color.type
+    mode = color.type.slice(0, 3) // strip of the "a" from rgba and hsla
     var cursor = query('.ace_cursor', el)
     range = {row: pos.row, start: color.start, end: color.end}
-    slider.set(color.color, true)
+    slider.set(color.text, true)
     slider.show(cursor)
   })
 }

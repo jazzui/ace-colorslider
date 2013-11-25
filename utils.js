@@ -32,10 +32,10 @@ function hexColor(text) {
     text = text[0] + text[0] + text[1] + text[1] + text[2] + text[2]
   }
   return {
-    r:parseInt(text.slice(0, 2), 16),
-    g:parseInt(text.slice(2, 4), 16),
-    b:parseInt(text.slice(4, 6), 16),
-    a:text.length === 8 ? parseInt(text.slice(6, 8), 16)/255 : 1
+    r: parseInt(text.slice(0, 2), 16),
+    g: parseInt(text.slice(2, 4), 16),
+    b: parseInt(text.slice(4, 6), 16),
+    a: 1
   }
 }
 
@@ -54,7 +54,8 @@ function rgbColor(parts) {
   return {
     r: rgbNum(parts[0]),
     g: rgbNum(parts[1]),
-    b: rgbNum(parts[2])
+    b: rgbNum(parts[2]),
+    a: parts.length === 4 ? parseFloat(parts[3]) : 1
   }
 }
 
@@ -71,7 +72,8 @@ function hslColor(parts) {
   return {
     r: rgb[0],
     g: rgb[1],
-    b: rgb[2]
+    b: rgb[2],
+    a: parts.length === 4 ? parseFloat(parts[3]) : 1
   }
 }
 
@@ -80,14 +82,13 @@ function findHexAt(line, column) {
   if (hash === -1 || hash < column - 7) return
   var sub = line.slice(hash)
   if (line.slice(hash, column).indexOf(' ') !== -1) return
-  var match = sub.match(/^#[a-fA-F0-9]{3,8}/)
+  var match = sub.match(/^#[a-fA-F0-9]{3,6}/)
   if (!match) return
   match = match[0]
   return {
     start: hash,
     end: hash + match.length,
     type: 'hex',
-    color: hexColor(match),
     text: match
   }
 }
@@ -98,19 +99,18 @@ function findExpandedAt(line, column) {
   var rp = line.slice(column-1).indexOf(')')
   if (rp === -1) return
   // TODO: change first to 4 to enable rgba
-  var ln = line[lp-1] === 'a' ? 3 : 3
+  var ln = line[lp-1] === 'a' ? 4 : 3
   var bef = line.slice(lp-ln,lp).toLowerCase()
   if (['rgb', 'rgba', 'hsl', 'hsla'].indexOf(bef) === -1) return
   var inner = line.slice(lp + 1, column + rp - 1)
-    , parts = inner.replace(/ /g, '').match(/^(\d+%?),(\d+%?),(\d+%?)/) // (,\d*\.?\d+)?/)
+    , parts = inner.replace(/ /g, '').match(/^(\d+%?),(\d+%?),(\d+%?)(,\d*\.?\d+)?/)
   if (!parts) return
   parts = parts.slice(1)
   return {
     start: lp - bef.length,
     end: column + rp,
     type: bef,
-    text: bef + '(' + inner + ')',
-    color: bef[0] === 'r' ? rgbColor(parts) : hslColor(parts)
+    text: bef + '(' + inner + ')'
   }
 }
 
